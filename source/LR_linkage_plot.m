@@ -1,9 +1,7 @@
-LR_params;
-
+% written by Kyle B. Gustafson at the Institute for Disease Modeling, Bellevue, WA 
+% between June 2016 and April 2017
 %%
-%
-% EVDnetworkidSLE(:,1) = nodeL3id{EVDnetworkSLE(:,1)};
-% EVDnetworkidSLE(:,2) = nodeL3id{EVDnetworkSLE(:,2)};
+LR_params;
 
 %%
 
@@ -98,39 +96,26 @@ destinationL3_minval = cell(1,numtpoints);
 destinationL3_meanval = cell(1,numtpoints);
 destinationL3_medianval = cell(1,numtpoints);
 
-fitgravcoefftest = cell(1,numtpoints);
-fitgravcoef2test = cell(1,numtpoints);
-fitgravcoef23test = cell(1,numtpoints);
-fitpowercoeftest = cell(1,numtpoints);
 alphaCDF_lesstest = zeros(1,numtpoints);
 alphaCDF_moretest = zeros(1,numtpoints);
 likelipl_lesstest = zeros(1,numtpoints);
 likelipl_moretest = zeros(1,numtpoints);
-coefpowsettest = zeros(1,numtpoints);
 
-fitgravcoeffval = cell(1,numtpoints);
-fitgravcoef2val = cell(1,numtpoints);
-fitgravcoef23val = cell(1,numtpoints);
-fitpowercoefval = cell(1,numtpoints);
 alphaCDF_lessval = zeros(1,numtpoints);
 alphaCDF_moreval = zeros(1,numtpoints);
 likelipl_lessval = zeros(1,numtpoints);
 likelipl_moreval = zeros(1,numtpoints);
-coefpowsetval = zeros(1,numtpoints);
 
-mdlg=0;mdlg2=0;mdlpow=0;aX3cdflf=0;aX3cdfmf=0;likliplcdfl=0;likliplcdfm=0;coefpow=0;
+aX3cdflf=0;aX3cdfmf=0;likliplcdfl=0;likliplcdfm=0;
 
+% setting the p-value for significant links in the POTN
 siglinksnetid = find(EVDpvalue<0.05);
 
 clear datelow datehigh windomain
 
 testrestprob = [];
 testmoveprob = [];
-valrestprob = [];
-valmoveprob = [];
 
-linkdist_less = [];
-linkdist_more = [];
 clear windowmain
 windomain = (lastday+firstday)./2;
 %%
@@ -193,25 +178,18 @@ for k = 1:numtpoints
     % if there are cases in the window or cumulatively
     if casesat(k)>0
         % this function compute the fits for gravity model generalization and from Clauset
-        [mdlg, mdlg23, mdlg2, mdlpow, aX3cdflf, aX3cdfmf, likliplcdfl, likliplcdfm, coefpow] = ...
-            fit_gravlevy(rho,tau1,tau2,alevy,EVDp,EVDrd,nonlinfits);
-        if nonlinfits
-            fitgravcoefftest{k} = mdlg.Coefficients;
-            fitgravcoef2test{k} = mdlg2.Coefficients;
-            fitgravcoef23test{k} = mdlg23.Coefficients;
-            fitpowercoeftest{k} = mdlpow.Coefficients;
-        end
+        [aX3cdflf, aX3cdfmf, likliplcdfl, likliplcdfm] = ...
+            fit_gravlevy(EVDp,EVDrd);
         alphaCDF_lesstest(k) = aX3cdflf;
         alphaCDF_moretest(k) = aX3cdfmf;
         likelipl_lesstest(k) = likliplcdfl;
         likelipl_moretest(k) = likliplcdfm;
-        coefpowsettest(k) = coefpow(1);
     end
     
     % this function computes the likelihood ratio
     [allp2,alldrv,llGrav,llLevy,RL1L2,normRgravlevy,pgravlevy,restprob,moveprob,gravgamma,gravprobnorm,...
             levyprobnorm] = ...
-        LP_gravlevy(rho,tau1,tau2,alevy,fitgravcoefftest{1,k},fitgravcoef2test{1,k},fitgravcoef23test{1,k},...
+        LP_gravlevy(rho,tau1,tau2,alevy,...
         drive_dist_meters_fullsym,casesat(k),originL3,destinationL3,SLPpop,nameL3SLE,...
         sortednameL3SLE,aX3cdfmf,aX3cdflf);
     
@@ -246,29 +224,21 @@ for k = 1:numtpoints
         % if there are cases in the window or cumulatively
         if casesat(k)>0
             % this function compute the fits for gravity model generalization and from Clauset
-            [mdlg, mdlg23, mdlg2, mdlpow, aX3cdflf, aX3cdfmf, likliplcdfl, likliplcdfm, coefpow] = ...
-                fit_gravlevy(rho,tau1,tau2,alevy,EVDp,EVDrd,nonlinfits);
-            fitgravcoeffval{k} = mdlg.Coefficients;
-            fitgravcoef23val{k} = mdlg23.Coefficients;
-            fitgravcoef2val{k} = mdlg2.Coefficients;
-            fitpowercoefval{k} = mdlpow.Coefficients;
+            [aX3cdflf, aX3cdfmf, likliplcdfl, likliplcdfm] = ...
+                fit_gravlevy(EVDp,EVDrd);
             alphaCDF_lessval(k) = aX3cdflf;
             alphaCDF_moreval(k) = aX3cdfmf;
             likelipl_lessval(k) = likliplcdfl;
             likelipl_moreval(k) = likliplcdfm;
-            coefpowsetval(k) = coefpow(1);
         end
         
         % this function computes the likelihood ratio
         [allp2,alldrv,llGrav,llLevy,RL1L2,normRgravlevy,pgravlevy,restprob,moveprob,gravgamma,gravprobnorm,...
             levyprobnorm] = ...
-            LP_gravlevy(rho,tau1,tau2,alevy,fitgravcoeffval{1,k},fitgravcoef2val{1,k},fitgravcoef23val{1,k},...
+            LP_gravlevy(rho,tau1,tau2,alevy,...
             drive_dist_meters_fullsym,casesat(k),originL3,destinationL3,SLPpop,nameL3SLE,...
             sortednameL3SLE,aX3cdfmf,aX3cdflf);
-        
-        valrestprob = [valrestprob restprob];
-        valmoveprob = [valmoveprob moveprob];
-        
+      
         RL1L2val(k) = RL1L2;
         normRval(k) = normRgravlevy;
         Pval(k) = -log10(pgravlevy);
@@ -288,7 +258,7 @@ for k = 1:numtpoints
     end
     
 end
-%%
+%% plotting likelihood ratio and p-value
 
 if plotLRon
     startplotid = find(isnan(normRtest(1:end-1)));

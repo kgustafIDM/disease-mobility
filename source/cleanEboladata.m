@@ -1,6 +1,7 @@
-
+% written by Kyle B. Gustafson at the Institute for Disease Modeling, Bellevue, WA 
+% between June 2016 and April 2017
+% load the data if the flag is on
 if needtoload
-    addpath U:\EpiLevy\code_base\epilevy\
     if strcmp(dataset,'Park')
         Park_SLe_network_prelims
     elseif strcmp(dataset,'Rambaut')
@@ -9,6 +10,8 @@ if needtoload
         error('nodataset');
     end
 end
+
+%% Clean up the data
 
 if strcmp(phylotype,'tree')
     nodenameL2 = ebolaTree.sourceData.AdminL2;

@@ -1,26 +1,14 @@
 function [allpop2,alldrivings,logLgrav,logLlevy,logLRL1L2,normLR12,p12,rprob,mprob,gravgamma,gravprobnorm,levyprobnorm] = ...
-    LP_gravlevy(rho,tau1,tau2,alevy,fgcoeff,fgcoef2,fgcoef23,dd_meters_fullsym,cases,oL3,dL3,SLEpop,nL3SLE,snL3SLE,aX3cdfmore,aX3cdfless)
-
+    LP_gravlevy(rho,tau1,tau2,alevy,dd_meters_fullsym,cases,oL3,dL3,SLEpop,nL3SLE,snL3SLE,aX3cdfmore,aX3cdfless)
+% written by Kyle B. Gustafson at the Institute for Disease Modeling, Bellevue, WA 
+% between June 2016 and April 2017
 LR_params;
 
 % allow flexibility in defintion of driving distance
 drive_dist = dd_meters_fullsym./1000;
 
 if cases>0
-    if strcmp(gravity_type,'grav3param')
-        gravp1 = fgcoeff.Estimate(2);
-        gravp2 = fgcoeff.Estimate(3);
-        gravgamma = fgcoeff.Estimate(4);
-    elseif strcmp(gravity_type,'grav2param')
-        gravp1 = fgcoef2.Estimate(2);
-        gravp2 = fgcoef2.Estimate(3);
-        gravgamma = rho;
-        %     gravgamma = mdlpow.Coefficients.Estimate(2);
-    elseif strcmp(gravity_type,'grav23param')
-        gravp1 = tau1; gravp2 = fgcoef23.Estimate(2);
-        gravgamma = fgcoef23.Estimate(3);
-        %     gravgamma = mdlpow.Coefficients.Estimate(2);
-    elseif strcmp(gravity_type,'classical')
+    if strcmp(gravity_type,'classical')
         gravgamma = 2; gravp1 = 1; gravp2 = 1;
     elseif strcmp(gravity_type,'input')
         gravgamma = rho; gravp1 = tau1; gravp2 = tau2;
@@ -75,9 +63,6 @@ end
 
 rprob(sortuniqorigins) = rests./(rests+moves);
 mprob(sortuniqorigins) = moves./(rests+moves);
-%
-% restprob = restprob./100000;
-% moveprob = moveprob./100000;
 
 pop_counts = zeros(size(SLEpop,1),1);
 for ii = 1:size(SLEpop,1)
@@ -118,13 +103,8 @@ for kk = 1:size(alevy,2)
                     gravprob(ii,jj) = pop_counts(ii)^2./rad_chiefdom^2;
                     levyprob(ii,jj) = 1/rad_chiefdom^alphalevy;
                 elseif strcmp(resting,'option2')
-                    %                     gravprob(ii,jj) = 1;
-                    %                     gravprob(ii,jj) = pop_counts(ii)^(2*gravp1)./rad_chiefdom^gravgamma;
-                    %                     levyprob(ii,jj) = 1/rad_chiefdom^alphalevy;
                     gravprob(ii,jj) = pop_counts(ii);
                     levyprob(ii,jj) = 1/rad_chiefdom^alphalevy;
-                    %                     levyprob(ii,jj) = mean(restprob);
-                    %                     levyprob(ii,jj) = pop_counts(ii)./rad_chiefdom;
                 end
             else
                 gravprob(ii,jj) = pop_counts(ii)^gravp1*pop_counts(jj)^gravp2/(drive_dist(ii,jj)/xminkm)^gravgamma;
@@ -145,11 +125,6 @@ for kk = 1:size(alevy,2)
         normlevy(ii) = sum(levyprob(ii,:));
         gravprobnorm(ii,:) = gravprob(ii,:)./normgrav(ii);
         levyprobnorm(ii,:) = levyprob(ii,:)./normlevy(ii);
-        % make the (ii,ii) resting probablity for Levy equal to gravity,
-        % and rescale the rest of the Levy probabilities to conserve total
-        %         levyprobnorm(ii,ii) = gravprobnorm(ii,ii);
-        %         sumelse = sum(levyprobnorm(ii,[1:ii-1 ii+1:end]));
-        %         levyprobnorm(ii,[1:ii-1 ii+1:end]) = levyprobnorm(ii,[1:ii-1 ii+1:end])*(1-levyprobnorm(ii,ii))./sumelse;
     end
     
     %compute model likelihoods
@@ -238,9 +213,6 @@ for kk = 1:size(alevy,2)
     
 end
 
-% figure; subplot(1,2,1);
-% plot(alevy,RL1L2); xlabel('Levy \alpha'); ylabel('Ratio'); grid on
-% subplot(1,2,2); semilogy(alevy,pgravlevy); xlabel('Levy \alpha'); ylabel('p-value');
 if size(alevy,2)>1
     figure; plotyy(alevy,logLRL1L2,alevy,-log10(p12)); grid on;
     xlabel('\alpha for Levy flight');

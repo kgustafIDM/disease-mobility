@@ -1,5 +1,6 @@
 function [oL3,dL3,EVDpop,EVDroaddist] = get_orig_dest(EVDlink,dd_meters_fullsym,dd_seconds_fullsym,nL3id,SLEpop,nL3SLE,snL3SLE)
-
+% written by Kyle B. Gustafson at the Institute for Disease Modeling, Bellevue, WA 
+% between June 2016 and April 2017
 EVDroaddist.mean = zeros(size(EVDlink,1),1);
 EVDroaddist.median = zeros(size(EVDlink,1),1);
 EVDroaddist.max = zeros(size(EVDlink,1),1);

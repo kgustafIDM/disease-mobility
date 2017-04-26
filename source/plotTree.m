@@ -1,4 +1,8 @@
-%%
+%% plot the POTN annotated by district
+
+% written by Kyle B. Gustafson at the Institute for Disease Modeling, Bellevue, WA 
+% between June 2016 and April 2017
+%% set the color scale for 14 districts
 cmap = hsv(14);
 cmapg = gray(13);
 

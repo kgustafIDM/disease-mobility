@@ -1,5 +1,6 @@
-
-% manual correction for Google Maps hiccup
+% written by Kyle B. Gustafson at the Institute for Disease Modeling, Bellevue, WA 
+% between June 2016 and April 2017
+%% manual correction for Google Maps hiccup
 latlong(166,2) = 8.135583;
 latlong(166,1) = -12.715;
 latlong(176,2) = 8.135583;
