@@ -3,6 +3,8 @@
 % between June 2016 and April 2017
 
 %%
+addpath('./pairwiseNetwork')
+addpath('../data');
 load('../data/ebolaAdmin.mat', 'ebolaAdminL2')
 load('../data/ebolaAdmin.mat', 'ebolaAdminL3')
 %%
